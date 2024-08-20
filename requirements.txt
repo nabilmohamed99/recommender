@@ -1,0 +1,7 @@
+Celery
+Django
+django-celery-beat
+django-celery-results
+Faker
+python-decouple
+redis
