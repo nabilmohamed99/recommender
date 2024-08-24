@@ -16,6 +16,22 @@ class Rating(models.IntegerChoices):
 
 User = settings.AUTH_USER_MODEL # 'auth.User'
 # user_ratings = user_obj.rating_set.all()
+from django.db.models import Avg
+
+
+class RatingQuerySet(models.QuerySet):
+    def avg(self):
+        return self.aggregate(average=Avg('value'))['average']
+
+class RatingManager(models.Manager):
+    def get_queryset(self):
+        return RatingQuerySet(self.model, using=self._db)
+
+    def avg(self):
+        return self.get_queryset().avg()
+
+
+
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     value= models.IntegerField(null=True,blank=True,choices=Rating.choices)
@@ -24,6 +40,7 @@ class Rating(models.Model):
     content_object= GenericForeignKey('content_type','object_id')
     timestamp=  models.DateTimeField(auto_now_add=True)
     active= models.BooleanField(default=True)
-    
+    objects = RatingManager() # Rating.objects.rating()
+
 
 
